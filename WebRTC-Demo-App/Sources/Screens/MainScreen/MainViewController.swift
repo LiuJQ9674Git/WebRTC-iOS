@@ -116,7 +116,9 @@ class MainViewController: UIViewController {
         self.speakerOn = false
         self.webRTCStatusLabel?.text = "New"
         // 代理实现
+        // extension MainViewController: WebRTCClientDelegate
         self.webRTCClient.delegate = self
+        // extension MainViewController: SignalClientDelegate
         self.signalClient.delegate = self
         //
         self.signalClient.connect()
@@ -186,8 +188,12 @@ class MainViewController: UIViewController {
     }
 }
 
-/**主视图实现信令客户端协议*/
+/**主视图实现信令客户端协议
+ SignalingClient->
+ */
 extension MainViewController: SignalClientDelegate {
+    
+    /**信令客户端代理，连接建立之后调用*/
     func signalClientDidConnect(_ signalClient: SignalingClient) {
         self.signalingConnected = true
     }

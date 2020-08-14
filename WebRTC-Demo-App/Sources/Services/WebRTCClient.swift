@@ -32,6 +32,7 @@ final class WebRTCClient: NSObject {
     }()
     
     // WebRTC客户端代理
+    // extension SignalingClient: WebSocketProviderDelegate
     weak var delegate: WebRTCClientDelegate?
     // 端连接
     private let peerConnection: RTCPeerConnection
@@ -77,6 +78,8 @@ final class WebRTCClient: NSObject {
         super.init()
         self.createMediaSenders()
         self.configureAudioSession()
+        // 端连接代理
+        // extension RTCPeerConnectionDelegate
         self.peerConnection.delegate = self
     }
     
@@ -93,6 +96,7 @@ final class WebRTCClient: NSObject {
         //
         // }
         // 成功之后设置端链接的本地信息SDP
+        //
         self.peerConnection.offer(for: constrains) { (sdp, error) in
             guard let sdp = sdp else {
                 return
@@ -197,6 +201,7 @@ final class WebRTCClient: NSObject {
         
         // Data
         if let dataChannel = createDataChannel() {
+            //extension WebRTCClient: RTCDataChannelDelegate
             dataChannel.delegate = self
             self.localDataChannel = dataChannel
         }
@@ -248,22 +253,27 @@ final class WebRTCClient: NSObject {
 /**扩展协议RTCPeerConnectionDelegate*/
 extension WebRTCClient: RTCPeerConnectionDelegate {
     
+    /**端连接信令状态变化*/
     func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
         debugPrint("peerConnection new signaling state: \(stateChanged)")
     }
     
+    /**有媒体流加入*/
     func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
         debugPrint("peerConnection did add stream")
     }
     
+    /**没有媒体流删除*/
     func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
         debugPrint("peerConnection did remove stream")
     }
     
+    /**端连接状态变化*/
     func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
         debugPrint("peerConnection should negotiate")
     }
     
+    /**端连接的iCE候选者状态变化*/
     func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
         debugPrint("peerConnection new connection state: \(newState)")
         //
@@ -274,6 +284,7 @@ extension WebRTCClient: RTCPeerConnectionDelegate {
         debugPrint("peerConnection new gathering state: \(newState)")
     }
     
+    /**有连接候选者产生*/
     func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
         //
         self.delegate?.webRTCClient(self, didDiscoverLocalCandidate: candidate)
@@ -283,14 +294,17 @@ extension WebRTCClient: RTCPeerConnectionDelegate {
         debugPrint("peerConnection did remove candidate(s)")
     }
     
+    /**端连接数据通道设置*/
     func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         debugPrint("peerConnection did open data channel")
         self.remoteDataChannel = dataChannel
     }
 }
+
 extension WebRTCClient {
     // 设置轨道，泛型
     private func setTrackEnabled<T: RTCMediaStreamTrack>(_ type: T.Type, isEnabled: Bool) {
+        // 收发器
         peerConnection.transceivers
             .compactMap { return $0.sender.track as? T } //$0即第一个参数
             .forEach { $0.isEnabled = isEnabled }
@@ -311,6 +325,8 @@ extension WebRTCClient {
 }
 // MARK:- Audio control
 extension WebRTCClient {
+    
+    /**关闭声音*/
     func muteAudio() {
         self.setAudioEnabled(false)
     }
@@ -371,6 +387,7 @@ extension WebRTCClient: RTCDataChannelDelegate {
         debugPrint("dataChannel did change state: \(dataChannel.readyState)")
     }
     
+    /**有消息到来时回调*/
     func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {
         self.delegate?.webRTCClient(self, didReceiveData: buffer.data)
     }
