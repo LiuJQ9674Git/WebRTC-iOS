@@ -45,6 +45,8 @@ final class SignalingClient {
         let message = Message.sdp(SessionDescription(from: rtcSdp))
         do {
             let dataMessage = try self.encoder.encode(message)
+            debugPrint("SignalingClient send data\n")
+            debugPrint(message)
             // 发送数据
             self.webSocket.send(data: dataMessage)
         }
@@ -57,6 +59,8 @@ final class SignalingClient {
         let message = Message.candidate(IceCandidate(from: rtcIceCandidate))
         do {
             let dataMessage = try self.encoder.encode(message)
+            debugPrint("SignalingClient send data\n")
+            debugPrint(message)
             self.webSocket.send(data: dataMessage)
         }
         catch {
@@ -97,7 +101,8 @@ extension SignalingClient: WebSocketProviderDelegate {
             debugPrint("Warning: Could not decode incoming message: \(error)")
             return
         }
-        
+        debugPrint("SignalingClient message data\n")
+        debugPrint(message)
         switch message {
         case .candidate(let iceCandidate):
             self.delegate?.signalClient(self, didReceiveCandidate: iceCandidate.rtcIceCandidate)

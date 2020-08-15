@@ -26,6 +26,8 @@ class NativeWebSocket: NSObject, WebSocketProvider {
     }
 
     func send(data: Data) {
+        debugPrint("send data\n")
+        debugPrint(data)
         self.socket?.send(.data(data)) { _ in }
     }
     

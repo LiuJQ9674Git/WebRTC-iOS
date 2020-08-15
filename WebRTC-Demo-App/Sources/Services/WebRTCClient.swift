@@ -116,6 +116,7 @@ final class WebRTCClient: NSObject {
                                              optionalConstraints: nil)
         self.peerConnection.answer(for: constrains) { (sdp, error) in
             guard let sdp = sdp else {
+                debugPrint("Error answer: \(String(describing: error))")
                 return
             }
             

@@ -204,6 +204,8 @@ extension MainViewController: SignalClientDelegate {
     // 接收SDP信令
     func signalClient(_ signalClient: SignalingClient, didReceiveRemoteSdp sdp: RTCSessionDescription) {
         print("Received remote sdp")
+        debugPrint("===========MainViewController signalClient didReceiveRemoteSdp==========\n")
+        debugPrint(sdp)
         self.webRTCClient.set(remoteSdp: sdp) { (error) in
             self.hasRemoteSdp = true
         }
@@ -211,6 +213,8 @@ extension MainViewController: SignalClientDelegate {
     // 接收ICE候选者的交互信息
     func signalClient(_ signalClient: SignalingClient, didReceiveCandidate candidate: RTCIceCandidate) {
         print("Received remote candidate")
+        debugPrint("===========MainViewController signalClient data==========\n")
+        debugPrint(candidate)
         self.remoteCandidateCount += 1
         self.webRTCClient.set(remoteCandidate: candidate)
     }
@@ -222,6 +226,8 @@ extension MainViewController: WebRTCClientDelegate {
     /**发现本地候选者*/
     func webRTCClient(_ client: WebRTCClient, didDiscoverLocalCandidate candidate: RTCIceCandidate) {
         print("discovered local candidate")
+        debugPrint("===========MainViewController: WebRTCClientDelegate  signalClient candidate==========\n")
+        debugPrint(candidate)
         self.localCandidateCount += 1
         self.signalClient.send(candidate: candidate)
     }
