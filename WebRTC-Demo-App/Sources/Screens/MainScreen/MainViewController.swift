@@ -226,7 +226,7 @@ extension MainViewController: WebRTCClientDelegate {
     /**发现本地候选者*/
     func webRTCClient(_ client: WebRTCClient, didDiscoverLocalCandidate candidate: RTCIceCandidate) {
         print("discovered local candidate")
-        debugPrint("===========MainViewController: WebRTCClientDelegate  signalClient candidate==========\n")
+        debugPrint("===MainViewController:WebRTCClientDelegatecandidate===\n")
         debugPrint(candidate)
         self.localCandidateCount += 1
         self.signalClient.send(candidate: candidate)
@@ -234,6 +234,9 @@ extension MainViewController: WebRTCClientDelegate {
     
     /**iCE候选者连接状态*/
     func webRTCClient(_ client: WebRTCClient, didChangeConnectionState state: RTCIceConnectionState) {
+        print("didChangeConnectionState  ")
+        debugPrint("===MainViewController:webRTCClient didChangeConnectionState===\n")
+        debugPrint(state)
         let textColor: UIColor
         switch state {
         case .connected, .completed:
